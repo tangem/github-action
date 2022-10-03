@@ -1,0 +1,36 @@
+{
+  "name": "github-action",
+  "version": "1.0.0",
+  "description": "Action to get issues in pull request or between branches",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --fix",
+    "build": "ncc build index.js --minify"
+  },
+  "keywords": [
+    "actions",
+    "jira",
+    "tangem"
+  ],
+  "author": "Pavel Sidorov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tangem/github-action.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tangem/github-action/issues"
+  },
+  "homepage": "https://github.com/tangem/github-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.9.1",
+    "@actions/github": "^5.1.0"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.19.1",
+    "@vercel/ncc": "^0.34.0",
+    "eslint": "^8.24.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0"
+  }
+}

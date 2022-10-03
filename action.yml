@@ -1,0 +1,32 @@
+name: "branches-difference-action"
+
+description: "Action to get issues in pull request"
+
+branding:
+  icon: git-pull-request
+  color: green
+
+inputs:
+  github-token:
+    required: true
+    description: "GitHub Token"
+  pull-number:
+    required: false
+    description: "Number of pull request"
+  base:
+    required: false
+    description: "Base Branch"
+  head:
+    required: false
+    description: "Branch for compare"
+  project-name:
+    required: true
+    description: "Alias of Project"
+
+outputs:
+  issues:
+    description: "List of jira issues"
+
+runs:
+  using: "node16"
+  main: "./dist/index.js"
