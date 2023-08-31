@@ -18,27 +18,29 @@ async function run() {
       setFailed('You mast set pull-number or base and head branches');
     }
 
-    const { data } = pullNumber
-      ? await rest.pulls.listCommits({ owner, repo, pull_number: pullNumber })
-      : await rest.repos.compareCommits({ owner, repo, base, head });
+    const { data} = pullNumber
+      ? await rest.pulls.listCommits({owner, repo, pull_number: pullNumber})
+      : await rest.repos.compareCommits({owner, repo, base, head});
 
-    const issues = data.reduce((issues, { commit }) => {
-        const names = commit.message.split('').reverse().join('').match(jiraMatcher);
-        if (!names) {
-          return issues;
-        }
-        names.forEach((res) => {
-          const id = res.split('').reverse().join('');
-          if (issues.indexOf(id) === -1) {
-            issues.push(id);
+    const issues = Array.isArray(data)
+      ? data.reduce((issues, {commit}) => {
+          const names = commit.message.split('').reverse().join('').match(jiraMatcher);
+          if (!names) {
+            return issues;
           }
-        });
-        return issues;
-      },
-      [],
-    );
+          names.forEach((res) => {
+            const id = res.split('').reverse().join('');
+            if (issues.indexOf(id) === -1) {
+              issues.push(id);
+            }
+          });
+          return issues;
+        },
+        [],
+      )
+      : [];
 
-   setOutput('issues', JSON.stringify(issues));
+    setOutput('issues', JSON.stringify(issues));
   } catch (err) {
     setFailed(err.message);
   }
