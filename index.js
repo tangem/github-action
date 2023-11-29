@@ -18,27 +18,46 @@ async function run() {
       setFailed('You mast set pull-number or base and head branches');
     }
 
-    const { data} = pullNumber
-      ? await rest.pulls.listCommits({owner, repo, pull_number: pullNumber})
-      : await rest.repos.compareCommits({owner, repo, base, head});
-
-    const issues = Array.isArray(data)
-      ? data.reduce((issues, {commit}) => {
-          const names = commit.message.split('').reverse().join('').match(jiraMatcher);
-          if (!names) {
-            return issues;
-          }
-          names.forEach((res) => {
-            const id = res.split('').reverse().join('');
-            if (issues.indexOf(id) === -1) {
-              issues.push(id);
+    let issues = [];
+    if (pullNumber) {
+      const { data} = await rest.pulls.listCommits({owner, repo, pull_number: pullNumber});
+      issues = Array.isArray(data)
+        ? data.reduce((issues, {commit}) => {
+            const names = commit.message.split('').reverse().join('').match(jiraMatcher);
+            if (!names) {
+              return issues;
             }
-          });
-          return issues;
-        },
-        [],
-      )
-      : [];
+            names.forEach((res) => {
+              const id = res.split('').reverse().join('');
+              if (issues.indexOf(id) === -1) {
+                issues.push(id);
+              }
+            });
+            return issues;
+          },
+          [],
+        )
+        : [];
+    } else {
+      const { data } = await rest.repos.compareCommitsWithBasehead({owner, repo, basehead: `${base}...${head}`});
+      issues = Array.isArray(data.commits)
+        ? data.commits.reduce((issues, { commit}) => {
+            const names = commit.message.split('').reverse().join('').match(jiraMatcher);
+            if (!names) {
+              return issues;
+            }
+            names.forEach((res) => {
+              const id = res.split('').reverse().join('');
+              if (issues.indexOf(id) === -1) {
+                issues.push(id);
+              }
+            });
+            return issues;
+          },
+          [],
+        )
+        : [];
+    }
 
     setOutput('issues', JSON.stringify(issues));
   } catch (err) {
