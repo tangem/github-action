@@ -20,7 +20,7 @@ async function run() {
 
     const { data} = pullNumber
       ? await rest.pulls.listCommits({owner, repo, pull_number: pullNumber})
-      : await rest.repos.compareCommits({owner, repo, base, head});
+      : await rest.repos.compareCommitsWithBasehead({owner, repo, basehead: `${base}...${head}`});
 
     const issues = Array.isArray(data)
       ? data.reduce((issues, {commit}) => {
